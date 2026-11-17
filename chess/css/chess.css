@@ -1,0 +1,295 @@
+/**
+ * File: chess.css
+ * Path: plugins/chess/css/chess.css
+ *
+ * Chess styles on top of Bootstrap 5.3 (light and dark theme aware).
+ * The pieces are drawn with pure CSS (clip-path shapes), no images and no font glyphs.
+ */
+
+.cx-game {
+	--cx-light: #eed9b6;
+	--cx-dark: #b58863;
+	--cx-sel: rgba(246, 214, 75, .75);
+	--cx-last: rgba(255, 221, 87, .45);
+	--cx-hint: rgba(20, 90, 50, .55);
+	--cx-check: rgba(220, 40, 40, .85);
+	--cx-label: #6b6256;
+	--cx-white-fill: #f8f4e8;
+	--cx-white-line: #1d1b18;
+	--cx-black-fill: #2c2b30;
+	--cx-black-line: #f2eee2;
+}
+[data-bs-theme="dark"] .cx-game {
+	--cx-light: #c9b48f;
+	--cx-dark: #8a6a4d;
+	--cx-label: #a9a191;
+}
+
+.cx-logo { font-style: normal; }
+
+/* ======================================================================
+   PIECES (pure CSS). One piece = <span class="cp t-X is-w|is-b"> with 5 child <i>
+   a, b - main shapes, c - base, d, e - details. Everything is a clip-path polygon
+   in a 100x100 coordinate space (percentages).
+   ====================================================================== */
+.cp {
+	--pf: var(--cx-white-fill);
+	--po: var(--cx-white-line);
+	--pd: var(--cx-white-line);
+	position: relative;
+	display: block;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	filter:
+		drop-shadow(1px 0 0 var(--po)) drop-shadow(-1px 0 0 var(--po))
+		drop-shadow(0 1px 0 var(--po)) drop-shadow(0 -1px 0 var(--po))
+		drop-shadow(0 2px 2px rgba(0, 0, 0, .3));
+}
+.cp.is-b {
+	--pf: var(--cx-black-fill);
+	--po: var(--cx-black-line);
+	--pd: var(--cx-black-line);
+}
+.cp i {
+	position: absolute;
+	inset: 0;
+	display: none;
+	background: var(--pf);
+}
+/* base plate shared by all pieces */
+.cp i.c {
+	display: block;
+	clip-path: polygon(16% 94%, 84% 94%, 84% 86%, 76% 86%, 76% 80%, 24% 80%, 24% 86%, 16% 86%);
+}
+
+/* pawn */
+.cp.t-p i.a { display: block; inset: auto; left: 34%; top: 14%; width: 32%; height: 32%; border-radius: 50%; }
+.cp.t-p i.b { display: block; clip-path: polygon(38% 46%, 62% 46%, 62% 52%, 58% 52%, 68% 80%, 32% 80%, 42% 52%, 38% 52%); }
+
+/* rook */
+.cp.t-r i.a { display: block; clip-path: polygon(24% 14%, 36% 14%, 36% 22%, 44% 22%, 44% 14%, 56% 14%, 56% 22%, 64% 22%, 64% 14%, 76% 14%, 76% 36%, 24% 36%); }
+.cp.t-r i.b { display: block; clip-path: polygon(32% 36%, 68% 36%, 64% 44%, 64% 70%, 72% 80%, 28% 80%, 36% 70%, 36% 44%); }
+
+/* knight (horse head facing left) */
+.cp.t-n i.a {
+	display: block;
+	clip-path: polygon(26% 80%, 31% 66%, 23% 60%, 16% 52%, 19% 43%, 29% 36%, 34% 27%, 36% 14%, 44% 21%, 50% 14%, 55% 25%, 65% 33%, 73% 50%, 76% 66%, 72% 80%);
+}
+.cp.t-n i.d { display: block; inset: auto; left: 20%; top: 44%; width: 4%; height: 4%; border-radius: 50%; background: var(--pd); }
+.cp.t-n i.e { display: block; inset: auto; left: 38%; top: 30%; width: 6%; height: 6%; border-radius: 50%; background: var(--pd); }
+
+/* bishop */
+.cp.t-b i.a { display: block; inset: auto; left: 36%; top: 16%; width: 28%; height: 38%; border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; }
+.cp.t-b i.b { display: block; clip-path: polygon(36% 52%, 64% 52%, 64% 58%, 58% 58%, 68% 80%, 32% 80%, 42% 58%, 36% 58%); }
+.cp.t-b i.d { display: block; inset: auto; left: 45%; top: 7%; width: 10%; height: 10%; border-radius: 50%; }
+.cp.t-b i.e { display: block; background: var(--pd); clip-path: polygon(50% 24%, 53% 27%, 48% 41%, 45% 38%); }
+
+/* queen: five-point crown with little balls on the tips */
+.cp.t-q i.a { display: block; clip-path: polygon(22% 26%, 32% 48%, 36% 24%, 44% 46%, 50% 18%, 56% 46%, 64% 24%, 68% 48%, 78% 26%, 74% 62%, 26% 62%); }
+.cp.t-q i.b { display: block; clip-path: polygon(28% 62%, 72% 62%, 66% 68%, 70% 80%, 30% 80%, 34% 68%); }
+.cp.t-q i.d {
+	display: block;
+	background:
+		radial-gradient(circle closest-side, var(--pf) 92%, transparent 100%) 19.2% 19.2% / 9% 9% no-repeat,
+		radial-gradient(circle closest-side, var(--pf) 92%, transparent 100%) 34.6% 17% / 9% 9% no-repeat,
+		radial-gradient(circle closest-side, var(--pf) 92%, transparent 100%) 50% 10.4% / 9% 9% no-repeat,
+		radial-gradient(circle closest-side, var(--pf) 92%, transparent 100%) 65.4% 17% / 9% 9% no-repeat,
+		radial-gradient(circle closest-side, var(--pf) 92%, transparent 100%) 80.8% 19.2% / 9% 9% no-repeat;
+}
+.cp.t-q i.e { display: block; background: var(--pd); clip-path: polygon(30% 63%, 70% 63%, 69% 66%, 31% 66%); }
+
+/* king: cross, dome, body */
+.cp.t-k i.a { display: block; clip-path: polygon(46% 3%, 54% 3%, 54% 9%, 60% 9%, 60% 15%, 54% 15%, 54% 22%, 46% 22%, 46% 15%, 40% 15%, 40% 9%, 46% 9%); }
+.cp.t-k i.b { display: block; inset: auto; left: 30%; top: 21%; width: 40%; height: 31%; border-radius: 50% 50% 24% 24% / 60% 60% 30% 30%; }
+.cp.t-k i.d { display: block; clip-path: polygon(31% 50%, 69% 50%, 64% 60%, 70% 80%, 30% 80%, 36% 60%); }
+.cp.t-k i.e { display: block; background: var(--pd); clip-path: polygon(34% 52%, 66% 52%, 65% 55%, 35% 55%); }
+
+/* sizes used outside the board */
+.cp-box { display: inline-block; width: 2.4rem; height: 2.4rem; vertical-align: middle; margin-right: .25rem; }
+.cp-mini { display: inline-block; width: 1.25rem; height: 1.25rem; margin-right: -.35rem; vertical-align: middle; }
+
+/* ======================================================================
+   BOARD
+   ====================================================================== */
+.cx-board-wrap {
+	display: grid;
+	grid-template-columns: 1.4rem minmax(0, 1fr);
+	grid-template-rows: auto 1.4rem;
+	width: 100%;
+	max-width: 620px;
+	margin: 0 auto;
+	position: relative;
+}
+.cx-ranks { display: grid; grid-template-rows: repeat(8, 1fr); }
+.cx-files { display: grid; grid-template-columns: repeat(8, 1fr); grid-column: 2; }
+.cx-ranks span, .cx-files span {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: .78rem;
+	font-weight: 700;
+	color: var(--cx-label);
+}
+.cx-board {
+	display: grid;
+	grid-template-columns: repeat(8, 1fr);
+	aspect-ratio: 1 / 1;
+	border: 2px solid #4a3a2a;
+	border-radius: .35rem;
+	overflow: hidden;
+	user-select: none;
+	-webkit-user-select: none;
+}
+.cx-sq {
+	position: relative;
+	display: block;
+	padding: 6%;
+	background: var(--cx-light);
+	cursor: default;
+}
+.cx-sq.is-dark { background: var(--cx-dark); }
+.cx-sq.is-last::before { content: ""; position: absolute; inset: 0; background: var(--cx-last); }
+.cx-sq.is-sel::before { content: ""; position: absolute; inset: 0; background: var(--cx-sel); }
+.cx-sq.is-check::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle, var(--cx-check) 20%, rgba(220, 40, 40, 0) 72%); }
+.cx-sq.is-hint::after {
+	content: "";
+	position: absolute;
+	left: 36%; top: 36%; width: 28%; height: 28%;
+	border-radius: 50%;
+	background: var(--cx-hint);
+}
+.cx-sq.is-hint.is-cap::after {
+	left: 5%; top: 5%; width: 90%; height: 90%;
+	background: transparent;
+	border: 5px solid var(--cx-hint);
+}
+.cx-sq.can-move { cursor: pointer; }
+.cx-sq.can-move:hover { box-shadow: inset 0 0 0 3px rgba(255, 255, 255, .7); }
+.cx-sq .cp { position: relative; z-index: 1; }
+.cx-sq.just-moved .cp { animation: cx-pop .35s ease-out; }
+@keyframes cx-pop { 0% { transform: scale(1.18); } 100% { transform: scale(1); } }
+
+/* promotion chooser */
+.cx-promo {
+	position: absolute;
+	inset: 0 0 1.4rem 1.4rem;
+	z-index: 5;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, .55);
+	border-radius: .35rem;
+}
+.cx-promo .box { background: var(--bs-body-bg); border-radius: .6rem; padding: .75rem; text-align: center; box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .4); }
+.cx-promo .opts { display: flex; gap: .5rem; margin-top: .5rem; }
+.cx-promo button {
+	width: 3.6rem; height: 3.6rem; padding: .25rem;
+	background: var(--cx-light); border: 2px solid transparent; border-radius: .5rem; cursor: pointer;
+}
+.cx-promo button:hover, .cx-promo button:focus-visible { border-color: var(--bs-primary); outline: none; }
+
+/* legend swatches (help block) */
+.cx-swatch {
+	position: relative;
+	flex: 0 0 auto;
+	display: inline-block;
+	width: 1.9rem; height: 1.9rem;
+	border-radius: .25rem;
+	background: var(--cx-light);
+	border: 1px solid rgba(0, 0, 0, .25);
+}
+.cx-swatch.is-sel { background: var(--cx-sel); }
+.cx-swatch.is-last { background: var(--cx-last); }
+.cx-swatch.is-check { background: radial-gradient(circle, var(--cx-check) 20%, rgba(220, 40, 40, 0) 72%), var(--cx-light); }
+.cx-swatch.is-move::after, .cx-swatch.is-cap::after { content: ""; position: absolute; border-radius: 50%; }
+.cx-swatch.is-move::after { left: 32%; top: 32%; width: 36%; height: 36%; background: var(--cx-hint); }
+.cx-swatch.is-cap::after { left: 8%; top: 8%; width: 84%; height: 84%; border: 4px solid var(--cx-hint); }
+
+/* ======================================================================
+   PLAYER BARS, CLOCKS, MOVE LIST, LOG
+   ====================================================================== */
+.cx-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: .75rem;
+	max-width: 620px;
+	margin: 0 auto;
+	padding: .35rem 0 .35rem 1.4rem;
+}
+.cx-bar .who { min-width: 0; }
+.cx-bar .name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cx-bar .taken { min-height: 1.35rem; padding-left: .35rem; }
+.cx-bar .adv { font-size: .75rem; color: var(--bs-secondary-color); margin-left: .6rem; }
+.cx-clock {
+	font-family: var(--bs-font-monospace);
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 1;
+	padding: .35rem .7rem;
+	border-radius: .4rem;
+	background: var(--bs-secondary-bg);
+	color: var(--bs-body-color);
+	min-width: 5.6rem;
+	text-align: center;
+}
+.cx-clock.is-run { background: var(--bs-success); color: #fff; }
+.cx-clock.is-low { background: var(--bs-danger); color: #fff; animation: cx-blink 1s steps(2, start) infinite; }
+@keyframes cx-blink { 50% { opacity: .55; } }
+.cx-dot { display: inline-block; width: .7rem; height: .7rem; border-radius: 50%; border: 1px solid var(--bs-border-color); margin-right: .35rem; }
+.cx-dot.is-w { background: #f8f4e8; }
+.cx-dot.is-b { background: #2c2b30; }
+
+.cx-moves { max-height: 240px; overflow-y: auto; }
+.cx-moves table { margin: 0; font-size: .9rem; }
+.cx-moves td.n { width: 2.6rem; color: var(--bs-secondary-color); }
+.cx-moves td.m.is-lastmove { font-weight: 700; background: var(--bs-warning-bg-subtle); }
+
+.cx-log { max-height: 260px; overflow-y: auto; }
+.cx-log .list-group-item { padding: .45rem .75rem; font-size: .9rem; border-left: 4px solid transparent; }
+.cx-log .k-move { border-left-color: var(--bs-border-color); }
+.cx-log .k-cap { border-left-color: var(--bs-warning); }
+.cx-log .k-check { border-left-color: var(--bs-danger); }
+.cx-log .k-big { border-left-color: var(--bs-success); font-weight: 600; }
+.cx-log .k-nag { border-left-color: var(--bs-info); font-style: italic; }
+.cx-log .who { font-weight: 600; }
+.cx-log .is-mine .who { color: var(--bs-success); }
+.cx-log .is-theirs .who { color: var(--bs-danger); }
+
+/* ======================================================================
+   CHAT
+   ====================================================================== */
+.cx-chat-list { min-height: 90px; max-height: 220px; overflow-y: auto; }
+.cx-msg { margin-bottom: .4rem; font-size: .9rem; }
+.cx-msg .bubble {
+	display: inline-block;
+	max-width: 88%;
+	padding: .3rem .65rem;
+	border-radius: .8rem;
+	text-align: left;
+	overflow-wrap: anywhere;
+	word-break: break-word;
+}
+.cx-msg small { display: block; font-size: .7rem; color: var(--bs-secondary-color); }
+.cx-msg.is-mine { text-align: right; }
+.cx-msg.is-mine .bubble { background: var(--bs-primary); color: #fff; }
+.cx-msg.is-theirs .bubble { background: var(--bs-secondary-bg); color: var(--bs-body-color); }
+
+/* ======================================================================
+   MISC
+   ====================================================================== */
+.cx-banner-text { font-size: 1.05rem; }
+.cx-help-icons .cp-box { margin-right: .1rem; }
+#cx-help .table td, #cx-help .table th { vertical-align: middle; }
+
+@media (max-width: 575.98px) {
+	.cx-board-wrap { grid-template-columns: 1.1rem minmax(0, 1fr); grid-template-rows: auto 1.2rem; }
+	.cx-bar { padding-left: 1.1rem; }
+	.cx-promo { inset: 0 0 1.2rem 1.1rem; }
+	.cx-clock { font-size: 1.2rem; min-width: 4.6rem; }
+	.cx-ranks span, .cx-files span { font-size: .68rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.cx-sq.just-moved .cp, .cx-clock.is-low { animation: none; }
+}
